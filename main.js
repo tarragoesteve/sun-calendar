@@ -19,6 +19,12 @@ const events = [
     }
   ]
 
+http.get('http://api.sunrise-sunset.org/json?lat=36.7201600&lng=-4.4203400&date=2021-10-17', (res) => {
+  //console.log(res);
+  res.on('data', function (chunk) {
+    console.log('BODY: ' + chunk);
+  });
+})
 
 const server = http.createServer((req, res) => {
   res.statusCode = 200;
