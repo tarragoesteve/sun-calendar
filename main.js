@@ -2,6 +2,7 @@ const http = require('http');
 
 const hostname = '127.0.0.1';
 const port = 3000;
+const days_in_future = 14
 
 
 const ics = require('ics')
@@ -19,8 +20,11 @@ const events = [
     }
   ]
 
-http.get('http://api.sunrise-sunset.org/json?lat=36.7201600&lng=-4.4203400&date=2021-10-17', (res) => {
-  //console.log(res);
+let now = new Date()
+let date_string = now.toISOString().slice(0,4+1+2+1+2);
+console.log(date_string);
+
+http.get(`http://api.sunrise-sunset.org/json?lat=36.7201600&lng=-4.4203400&date=${date_string}`, (res) => {
   res.on('data', function (chunk) {
     console.log('BODY: ' + chunk);
   });
@@ -34,5 +38,5 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(port, hostname, () => {
-  console.log('Server running at http://${hostname}:${port}/');
+  console.log(`Server running at http://${hostname}:${port}/`);
 });
