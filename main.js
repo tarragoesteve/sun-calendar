@@ -1,7 +1,7 @@
 const http = require('http');
 const ical = require('ical-generator');
 
-const hostname = '127.0.0.1';
+const hostname = '185.181.8.162';
 const port = 3000;
 const days_in_future = 14
 const latitude = 41.43

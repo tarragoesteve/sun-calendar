@@ -1,0 +1,24 @@
+{
+  "name": "sun-calendar",
+  "version": "1.0.0",
+  "description": "Calendar following the sun",
+  "main": "main.js",
+  "dependencies": {
+    "ical-generator": "^3.0.1",
+    "ics": "^2.31.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tarragoesteve/sun-calendar.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tarragoesteve/sun-calendar/issues"
+  },
+  "homepage": "https://github.com/tarragoesteve/sun-calendar#readme"
+}
