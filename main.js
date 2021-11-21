@@ -1,7 +1,10 @@
 const http = require('http');
+const express = require('express')
 const ical = require('ical-generator');
+var suncalc = require('suncalc');
+app = express()
 
-const hostname = '185.181.8.162';
+const hostname = '0.0.0.0';
 const port = 3000;
 const days_in_future = 14
 const latitude = 41.43
@@ -13,7 +16,7 @@ const events = [
     reference: 'sunset',
     start_time: -11 * 60 * 60 * 1000 - 20 * 60 * 1000,
     end_time: -11 * 60 * 60 * 1000,
-    busystatus: ical.ICalEventBusyStatus.OOF,
+    busystatus: "OOF",
     alarms : [10* 60]
   },
   {
@@ -22,7 +25,7 @@ const events = [
     reference: 'sunset',
     start_time: -2 * 60 * 60 * 1000,
     end_time: -0.5 * 60 * 60 * 1000,
-    busystatus: ical.ICalEventBusyStatus.OOF
+    busystatus: "OOF"
   },/*
   {
     summary: 'Dinner',
@@ -42,70 +45,52 @@ const events = [
 
 
 const ics = require('ics')
+app = express()
 
-const server = http.createServer(async (req, res) => {
+app.get('*', function (req, res) {
+  console.log(req.params);
   let calendar = ical({ name: 'my first iCal' });
   res.statusCode = 200;
   res.setHeader('Content-Type', 'text/calendar');
   for (const day of Array(days_in_future).keys()) {
     let date = new Date()
     date.setDate(date.getDate() + day)
-    result = await getSunInfo(date);
+    result = suncalc.getTimes(date, latitude, longitude);
     for (const event of events) {
       if (event.days_of_the_week.indexOf(date.getDay()) != -1) {
-        //console.log(result['results']);
-        reference_date = new Date(result['results'][event.reference]);
+        reference_date = result[event.reference];
         let ical_event = {
           start: new Date(reference_date.getTime() + event.start_time),
           end: new Date(reference_date.getTime() + event.end_time),
           summary: event.summary
         }
-        if (typeof event.busystatus !== 'undefined') ical_event.busystatus = event.busystatus
+        if (typeof event.busystatus !== 'undefined') {
+          ical_event.busystatus = event.busystatus
+        }
         let calendar_event = calendar.createEvent(ical_event);
-        if (typeof event.alarms !== 'undefined')
-        {
+        if (typeof event.alarms !== 'undefined') {
           for (const alarm of event.alarms) {
-            calendar_event.createAlarm({type : ical.ICalAlarmType.audio,
-              trigger: alarm})          
+            calendar_event.createAlarm({
+              type: ical.ICalAlarmType.audio,
+              trigger: alarm
+            })
           }
         }
-
       }
     }
   }
   calendar.serve(res);
-});
+})
 
-server.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
-});
+app.listen(port)
 
-async function getSunInfo(date) {
-  return new Promise((resolve, reject) => {
-    let date_string = date.toISOString().slice(0, 4 + 1 + 2 + 1 + 2);
-    http.get(`http://api.sunrise-sunset.org/json?lat=${latitude}&lng=${longitude}&date=${date_string}&formatted=0`, (res) => {
-      data = ''
-      // A chunk of data has been received.
-      res.on('data', (chunk) => {
-        data += chunk;
-      });
-      // The whole response has been received. Print out the result.
-      res.on('end', () => {
-        resolve(JSON.parse(data));
-      });
-    });
-  })
-}
+console.log(JSON.stringify(
+  {
+    days_in_future : days_in_future,
+    latitude : latitude,
+    longitude : longitude,
+    events : events,
+  }
+)); 
 
-// (async () => {
-//   let events = []
-//   for (const day of Array(days_in_future).keys()) {
-//     let date = new Date()
-//     date.setDate(date.getDate() + day)
-//     result = await getSunInfo(date);
-//     date = Date.parse(result['results']['sunrise'])
-//     events.push(createEvent(date, 15, 'sunrise'))
-//   }
-//   ics.createEvents(events)
-//   console.log(events);
-// })();
+console.log(`Server running at http://${hostname}:${port}/calendar=%7B%22days_in_future%22%3A14%2C%22latitude%22%3A41.43%2C%22longitude%22%3A2.01%2C%22events%22%3A%5B%7B%22summary%22%3A%22Travel%20to%20work%22%2C%22days_of_the_week%22%3A%5B1%2C2%2C3%2C4%2C5%5D%2C%22reference%22%3A%22sunset%22%2C%22start_time%22%3A-40800000%2C%22end_time%22%3A-39600000%2C%22busystatus%22%3A%22OOF%22%2C%22alarms%22%3A%5B600%5D%7D%2C%7B%22summary%22%3A%22Outdoor%20activity%22%2C%22days_of_the_week%22%3A%5B1%2C2%2C3%2C4%2C5%5D%2C%22reference%22%3A%22sunset%22%2C%22start_time%22%3A-7200000%2C%22end_time%22%3A-1800000%2C%22busystatus%22%3A%22OOF%22%7D%5D%7D`);
