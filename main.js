@@ -1,11 +1,13 @@
-const http = require('http');
+//dependencies
 const express = require('express')
 const ical = require('ical-generator');
-var suncalc = require('suncalc');
+const suncalc = require('suncalc');
+const lzstring = require('lz-string')
+//constants
 app = express()
-
 const hostname = '0.0.0.0';
 const port = 3000;
+//input
 const days_in_future = 14
 const latitude = 41.43
 const longitude = 2.01
@@ -42,21 +44,18 @@ const events = [
   },*/
 ]
 
-
-
-const ics = require('ics')
-app = express()
-
 app.get('*', function (req, res) {
-  console.log(req.params);
-  let calendar = ical({ name: 'my first iCal' });
+  console.log(req.query);
+  let input = JSON.parse(lzstring.decompressFromEncodedURIComponent(req.query.calendar))
+  console.log(input);
+  let calendar = ical({ name: 'My sun calendar' });
   res.statusCode = 200;
   res.setHeader('Content-Type', 'text/calendar');
-  for (const day of Array(days_in_future).keys()) {
+  for (const day of Array(input['days_in_future']).keys()) {
     let date = new Date()
     date.setDate(date.getDate() + day)
     result = suncalc.getTimes(date, latitude, longitude);
-    for (const event of events) {
+    for (const event of input['events']) {
       if (event.days_of_the_week.indexOf(date.getDay()) != -1) {
         reference_date = result[event.reference];
         let ical_event = {
@@ -91,6 +90,21 @@ console.log(JSON.stringify(
     longitude : longitude,
     events : events,
   }
-)); 
+));
 
-console.log(`Server running at http://${hostname}:${port}/calendar=%7B%22days_in_future%22%3A14%2C%22latitude%22%3A41.43%2C%22longitude%22%3A2.01%2C%22events%22%3A%5B%7B%22summary%22%3A%22Travel%20to%20work%22%2C%22days_of_the_week%22%3A%5B1%2C2%2C3%2C4%2C5%5D%2C%22reference%22%3A%22sunset%22%2C%22start_time%22%3A-40800000%2C%22end_time%22%3A-39600000%2C%22busystatus%22%3A%22OOF%22%2C%22alarms%22%3A%5B600%5D%7D%2C%7B%22summary%22%3A%22Outdoor%20activity%22%2C%22days_of_the_week%22%3A%5B1%2C2%2C3%2C4%2C5%5D%2C%22reference%22%3A%22sunset%22%2C%22start_time%22%3A-7200000%2C%22end_time%22%3A-1800000%2C%22busystatus%22%3A%22OOF%22%7D%5D%7D`);
+
+
+
+
+let encoded = lzstring.compressToEncodedURIComponent(JSON.stringify(
+  {
+    days_in_future : days_in_future,
+    latitude : latitude,
+    longitude : longitude,
+    events : events,
+  }
+))
+//console.log(encoded);
+//let input = JSON.parse(lzstring.decompressFromEncodedURIComponent(encoded));
+
+console.log(`Server running at http://${hostname}:${port}?calendar=${encoded}`);
