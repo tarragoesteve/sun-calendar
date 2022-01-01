@@ -1,0 +1,21 @@
+<p>url-generator works!</p>
+<form [formGroup]="form_group">
+    <input formControlName="latitude">
+    <input formControlName="longitude">
+    <div formArrayName="events">
+        <div *ngFor="let event of events_form.controls; let i=index" 
+              [formGroupName]="i">
+  
+            <input formControlName="summary">
+            <input formControlName="reference">
+            <input formControlName="end_time">
+  
+            <button (click)="deleteEvent(i)">Delete</button>
+          </div>
+    </div>
+
+    <button (click)="addEvent()">Add Event</button>
+</form>
+
+<div *ngIf="form_group.invalid"> Input is not valid</div>
+<div *ngIf="form_group.valid">{{encodedUrl}}</div>
