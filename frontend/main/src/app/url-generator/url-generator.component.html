@@ -1,20 +1,74 @@
 <p>url-generator works!</p>
 <form [formGroup]="form_group">
-    <input formControlName="latitude">
-    <input formControlName="longitude">
-    <div formArrayName="events">
-        <div *ngFor="let event of events_form.controls; let i=index" 
-              [formGroupName]="i">
-  
-            <input formControlName="summary">
-            <input formControlName="reference">
-            <input formControlName="end_time">
-  
-            <button (click)="deleteEvent(i)">Delete</button>
-          </div>
-    </div>
+  <mat-form-field appearance="fill">
+    <mat-label>latitude</mat-label>
+    <input matInput formControlName="latitude">
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>longitude</mat-label>
+    <input matInput formControlName="longitude">
+  </mat-form-field>
+  <div formArrayName="events">
+    <div *ngFor="let event of events_form.controls; let i=index" [formGroupName]="i">
+      <mat-divider></mat-divider>
+      <mat-form-field appearance="fill">
+        <mat-label>Event title</mat-label>
+        <input matInput formControlName="summary">
+      </mat-form-field>
 
-    <button (click)="addEvent()">Add Event</button>
+      <mat-form-field appearance="fill">
+        <mat-label>Reference</mat-label>
+        <mat-select formControlName="reference" required>
+          <mat-option *ngFor="let time_reference of time_references" [value]="time_reference">
+            {{time_reference}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+
+      <button (click)="deleteEvent(i)">Delete</button>
+
+      <div formGroupName="start_time">
+        Start time:
+        <mat-button-toggle-group formControlName="before" aria-label="Font Style">
+          <mat-button-toggle value="before">Before </mat-button-toggle>
+          <mat-button-toggle value="after"> After</mat-button-toggle>
+        </mat-button-toggle-group>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Hour</mat-label>
+          <input matInput formControlName="hour" type="time">
+        </mat-form-field>
+      </div>
+
+      <div formGroupName="end_time">
+        End time:
+        <mat-button-toggle-group formControlName="before" aria-label="Font Style">
+          <mat-button-toggle value="before">Before </mat-button-toggle>
+          <mat-button-toggle value="after"> After</mat-button-toggle>
+        </mat-button-toggle-group>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Time</mat-label>
+          <input matInput formControlName="hour" type="time">
+        </mat-form-field>
+      </div>
+
+
+      <div formArrayName="recurrence_form">
+        <span *ngFor="let day of get_recurrence_form(i).controls; let j=index">
+          <mat-checkbox [formGroupName]="j">
+            {{day.value}}
+          </mat-checkbox>
+          {{this.days_of_week[j]}}
+        </span>
+        {{get_recurrence_form(i).value}}
+
+      </div>
+    </div>
+  </div>
+
+  <button (click)="addEvent()">Add Event</button>
 </form>
 
 <div *ngIf="form_group.invalid"> Input is not valid</div>
