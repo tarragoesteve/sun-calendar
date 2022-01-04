@@ -57,13 +57,10 @@
 
       <div formArrayName="recurrence_form">
         <span *ngFor="let day of get_recurrence_form(i).controls; let j=index">
-          <mat-checkbox [formGroupName]="j">
-            {{day.value}}
+          <mat-checkbox [formControlName]="j">
           </mat-checkbox>
           {{this.days_of_week[j]}}
         </span>
-        {{get_recurrence_form(i).value}}
-
       </div>
     </div>
   </div>

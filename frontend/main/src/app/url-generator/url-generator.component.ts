@@ -60,14 +60,13 @@ export class UrlGeneratorComponent implements OnInit {
       hour: 1,
       minute: 0,
     });
+  
 
-    let array = []
+    const recurrence_form = this.form_builder.array([])
 
-    for (const i of this.days_of_week) {
-      array.push(true);
-    }    
-
-    const recurrence_form = this.form_builder.array(array)
+    for (const i of this.days_of_week) {      
+      recurrence_form.push(this.form_builder.control(true));
+    }
 
 
 
@@ -87,6 +86,17 @@ export class UrlGeneratorComponent implements OnInit {
   }
 
   get encodedUrl() {
+
+    let structure = {
+      days_in_future: this.days_in_future,
+      latitude: this.form_group.value.latitude,
+      longitude: this.form_group.value.longitude,
+      events: []
+    }
+
+    // for (const event of this.form_group.) {
+      
+    // }
 
     let encoded = compressToEncodedURIComponent(JSON.stringify(
       {
