@@ -55,27 +55,27 @@ export class UrlGeneratorComponent implements OnInit {
 
   addEvent() {
 
-    const time_from = this.form_builder.group({
+    let time_from1 = this.form_builder.group({
       before: 'before',
-      hour: 1,
-      minute: 0,
+      hour: '0:05',
     });
-  
 
+    let time_from2 = this.form_builder.group({
+      before: 'before',
+      hour: '0:05',
+    });
     const recurrence_form = this.form_builder.array([])
 
     for (const i of this.days_of_week) {      
       recurrence_form.push(this.form_builder.control(true));
     }
 
-
-
     const event = this.form_builder.group({
       summary: 'Golden hour',
       recurrence_form: recurrence_form, // 0 represents sunday
       reference: 'sunset',
-      start_time: time_from,
-      end_time: time_from,
+      start_time: time_from1,
+      end_time: time_from2,
     })
 
     this.events_form.push(event)
@@ -87,29 +87,50 @@ export class UrlGeneratorComponent implements OnInit {
 
   get encodedUrl() {
 
-    let structure = {
+    let structure: any = {
       days_in_future: this.days_in_future,
       latitude: this.form_group.value.latitude,
       longitude: this.form_group.value.longitude,
-      events: []
+      events: [],
     }
 
-    // for (const event of this.form_group.) {
-      
-    // }
-
-    let encoded = compressToEncodedURIComponent(JSON.stringify(
-      {
-        days_in_future: this.days_in_future,
-        latitude: this.form_group.value.latitude,
-        longitude: this.form_group.value.longitude,
-        events: this.form_group.controls.events.value,
+    for (const i of [...Array(this.events_form.length).keys()]) {
+      structure.events = []
+      let event_info = this.events_form.at(i).value
+      //console.log(event_info);
+      let days_of_the_week = [] // 0 represents sunday
+      for (const day in event_info.recurrence_form) {
+        if (event_info.recurrence_form[day]) {
+          days_of_the_week.push((Number(day) + 1) % 7)
+        }
       }
-    ))
+      
+      let aux = event_info.start_time.hour.split(':')
+      let seconds = aux[0] * 60 * 60 + aux[1] * 60
+      let miliseconds = 1000 * seconds
+      let start_time = event_info.start_time.before == 'before' ? -miliseconds : miliseconds
+      aux = event_info.end_time.hour.split(':')
+      seconds = aux[0] * 60 * 60 + aux[1] * 60
+      miliseconds = 1000 * seconds
+      let end_time = event_info.end_time.before == 'before' ? -miliseconds : miliseconds
+      console.log(start_time, end_time);
+
+      structure.events.push({
+        summary: event_info.summary,
+        days_of_the_week: days_of_the_week,
+        reference: event_info.reference,
+        start_time: start_time,
+        end_time: end_time,
+      })
+      
+      
+    }
+
+    let encoded = compressToEncodedURIComponent(JSON.stringify(structure))
     //console.log(encoded);
     const hostname = '0.0.0.0';
     const port = 3000;
-    //console.log(`Server running at http://${hostname}:${port}?calendar=${encoded}`);
+    console.log(`Server running at http://${hostname}:${port}?calendar=${encoded}`);
     return encoded
 
   }
