@@ -5,7 +5,6 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { UrlGeneratorComponent } from './url-generator/url-generator.component';
-import { EventInputComponent } from './event-input/event-input.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
@@ -20,7 +19,6 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
   declarations: [
     AppComponent,
     UrlGeneratorComponent,
-    EventInputComponent
   ],
   imports: [
     BrowserModule,

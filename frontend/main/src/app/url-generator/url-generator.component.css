@@ -1,0 +1,38 @@
+.grid-container
+{
+    display: grid;
+    grid-template-areas:
+    'header header '
+    'info input'
+    'footer footer';
+    grid-template-columns: 2fr 4fr;
+    grid-template-rows: 60px 1fr 60px;
+    justify-content: space-evenly;
+    height: 100%;
+    width: 100%;
+}
+
+.header
+{
+    grid-area: header;
+    background-color: blue;
+}
+
+.info {
+    grid-area: info;
+    background-color: blueviolet;
+}
+
+.input {
+    grid-area: input;
+    background-color: brown;
+}
+
+.footer {
+    grid-area: footer;
+    background-color: aquamarine;
+}
+
+
+
+

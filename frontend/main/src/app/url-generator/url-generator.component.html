@@ -1,5 +1,10 @@
-<p>url-generator works!</p>
-<form [formGroup]="form_group">
+<div class="grid-container">
+<h1 class="header">Sunset Calendar Generator</h1>
+<form [formGroup]="form_group" class="input">
+  <mat-form-field appearance="fill">
+    <mat-label>Calendar Name</mat-label>
+    <input matInput>
+  </mat-form-field>
   <mat-form-field appearance="fill">
     <mat-label>latitude</mat-label>
     <input matInput formControlName="latitude">
@@ -66,7 +71,14 @@
   </div>
 
   <button (click)="addEvent()">Add Event</button>
+
+  <div *ngIf="form_group.invalid"> Input is not valid</div>
+  <textarea *ngIf="form_group.valid">{{encodedUrl}}</textarea>
+
 </form>
 
-<div *ngIf="form_group.invalid"> Input is not valid</div>
-<textarea *ngIf="form_group.valid">{{encodedUrl}}</textarea>
+
+
+<div class="footer">Brought to you by @tarragoesteve</div>
+
+</div>
